@@ -174,21 +174,35 @@ export function apply(ctx: Context): void {
         }}
       >
         <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
-          {/* Nyan cat rides at the leading edge of the fill, sticking above the bar. */}
-          <img
-            src={catRight}
-            alt=""
-            width={32}
-            height={32}
-            style={{
-              position: 'absolute',
-              left: `calc(${context.percent}% - 10px)`,
-              top: -6,
-              zIndex: 2,
-              imageRendering: 'pixelated',
-              pointerEvents: 'none',
-            }}
-          />
+          <style>{`
+            @keyframes a02-nyan-run {
+              from { left: 0; }
+              to { left: calc(100% - 32px); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              #a02-nyan-cat { animation: none !important; left: 0 !important; }
+            }
+          `}</style>
+          {/* The original plugin's indeterminate animation moves the cat back
+              and forth across the bar; we keep it running all the time. */}
+          <div style={{ position: 'absolute', left: 0, top: -6, width: '100%', height: 32, zIndex: 2, pointerEvents: 'none' }}>
+            <img
+              id="a02-nyan-cat"
+              src={catRight}
+              alt=""
+              width={32}
+              height={32}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                imageRendering: 'pixelated',
+                animation: 'a02-nyan-run 1.8s linear infinite alternate',
+                willChange: 'left',
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
           {/* Rounded track, no dark card around it. */}
           <div
             style={{
