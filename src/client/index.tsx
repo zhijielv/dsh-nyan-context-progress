@@ -197,12 +197,12 @@ export function apply(ctx: Context): void {
           <img
             src={NYAN_FRAMES[frame]}
             alt=""
-            width={54}
-            height={33}
+            width={40}
+            height={25}
             style={{
               position: 'absolute',
               left: `calc(${context.percent}% - 10px)`,
-              top: -6,
+              top: -5,
               zIndex: 2,
               imageRendering: 'pixelated',
               pointerEvents: 'none',
