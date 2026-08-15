@@ -69,6 +69,7 @@ const args = [
   '--target=es2022',
   '--jsx=automatic',
   '--loader:.png=dataurl',
+  '--loader:.svg=dataurl',
   `--outfile=${join(HERE, 'lib', 'client.js')}`,
   ...PLATFORM_EXTERNALS.flatMap(spec => [`--external:${spec}`]),
   `--banner:js=${banner}`,

@@ -16,6 +16,7 @@
  */
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -27,7 +28,15 @@ import type { PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-runtime/client'
 import type { ContextPressureProjection } from '@deepseek-ai/dsh-token-meter/client'
-import catRight from './assets/rsz_cat.png'
+import nyan1 from './assets/nyan/nyan1.svg'
+import nyan2 from './assets/nyan/nyan2.svg'
+import nyan3 from './assets/nyan/nyan3.svg'
+import nyan4 from './assets/nyan/nyan4.svg'
+import nyan5 from './assets/nyan/nyan5.svg'
+import nyan6 from './assets/nyan/nyan6.svg'
+
+/** The six original Nyan Cat running frames (from iliana/html5nyancat). */
+const NYAN_FRAMES = [nyan1, nyan2, nyan3, nyan4, nyan5, nyan6]
 
 /** Composed props of a `shell.overlay` list entry (root scope, no owner props). */
 type OverlayProps = PropsRuntime<'shell.overlay'>
@@ -143,6 +152,15 @@ export function apply(ctx: Context): void {
       if (positionRef.current !== null) savePosition(positionRef.current)
     }
 
+    // Cycle the six original running frames in place (12fps). Respect the OS
+    // reduced-motion setting by freezing on the first frame.
+    const [frame, setFrame] = useState(0)
+    useEffect(() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      const timer = window.setInterval(() => setFrame(f => (f + 1) % NYAN_FRAMES.length), 120)
+      return () => window.clearInterval(timer)
+    }, [])
+
     const context = contextOccupancy(pressure)
     if (context === null) return null
 
@@ -174,35 +192,22 @@ export function apply(ctx: Context): void {
         }}
       >
         <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
-          <style>{`
-            @keyframes a02-nyan-run {
-              from { left: 0; }
-              to { left: calc(100% - 32px); }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              #a02-nyan-cat { animation: none !important; left: 0 !important; }
-            }
-          `}</style>
-          {/* The original plugin's indeterminate animation moves the cat back
-              and forth across the bar; we keep it running all the time. */}
-          <div style={{ position: 'absolute', left: 0, top: -6, width: '100%', height: 32, zIndex: 2, pointerEvents: 'none' }}>
-            <img
-              id="a02-nyan-cat"
-              src={catRight}
-              alt=""
-              width={32}
-              height={32}
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                imageRendering: 'pixelated',
-                animation: 'a02-nyan-run 1.8s linear infinite alternate',
-                willChange: 'left',
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
+          {/* Nyan cat stays at the leading edge and plays its running
+              animation in place via the six original frames. */}
+          <img
+            src={NYAN_FRAMES[frame]}
+            alt=""
+            width={54}
+            height={33}
+            style={{
+              position: 'absolute',
+              left: `calc(${context.percent}% - 10px)`,
+              top: -6,
+              zIndex: 2,
+              imageRendering: 'pixelated',
+              pointerEvents: 'none',
+            }}
+          />
           {/* Rounded track, no dark card around it. */}
           <div
             style={{

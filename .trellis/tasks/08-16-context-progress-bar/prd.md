@@ -15,7 +15,7 @@
   - 总容量 = `contextWindow`
   - 百分比 = `min(100, round(used / contextWindow * 100))`
 - 仅当 `usedTokens` 和 `contextWindow` 都可用时显示；缺失时隐藏，不占位。
-- 进度条复刻 JetBrains NyanProgressBar 的确定态效果：薄圆角轨道 + 竖直 7 色彩虹填充 + 原版 Nyan Cat sprite；猫参考原版 indeterminate 动画持续往返跑动。
+- 进度条复刻 JetBrains NyanProgressBar 的确定态效果：薄圆角轨道 + 竖直 7 色彩虹填充 + 原版 Nyan Cat；猫停在进度条前端，原地播放原版 6 帧跑步序列动画。
 - 跟随当前会话切换；会话投影更新时进度条自动更新；切换会话时清理旧订阅。
 - 使用 `ctx.slots.inject('shell.overlay', ...)` 等待官方槽位声明，避免插件加载顺序问题。
 - 进度条可鼠标/触摸拖拽移动位置，位置通过 localStorage 持久化。
