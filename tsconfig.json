@@ -1,0 +1,24 @@
+{
+  "extends": "D:/Projects/GithubProjects/deepseek-harness/tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": [],
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "react": ["../../deepseek-harness/node_modules/.pnpm/@types+react@18.3.31/node_modules/@types/react"],
+      "react/jsx-runtime": ["../../deepseek-harness/node_modules/.pnpm/@types+react@18.3.31/node_modules/@types/react/jsx-runtime.d.ts"],
+      "@deepseek-ai/cordis": ["../../deepseek-harness/vendor/cordis/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-runtime/client": ["../../deepseek-harness/packages/client/runtime/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-slots": ["../../deepseek-harness/packages/client/ui-slots/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-layout/client": ["../../deepseek-harness/packages/client/ui-layout/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-token-meter/client": ["../../deepseek-harness/packages/llm/token-meter/lib/types/client.d.ts"]
+    }
+  },
+  "include": ["src/client/index.tsx"]
+}
