@@ -46,29 +46,27 @@ export const inject = ['slots', 'sessions']
  * @param ctx - client root context.
  */
 export function apply(ctx: Context): void {
-  const ContextProgress = ({ useSessions }: OverlayProps): JSX.Element | null => {
-    const currentId = useSessions(s => s.current)
-
-    // Root-scope slots do not receive the session `useProjection` seat, so we
-    // subscribe to the current session's projection face directly. We also
-    // subscribe to the sessions list/provide-info feeds so a binding that is
-    // materialized after the first render can re-arm this subscription.
+  const ContextProgress = (_props: OverlayProps): JSX.Element | null => {
+    // Official useProjection reads the projection face off
+    // `sessions.currentProvideInfo.projections`. Root-scope slots don't receive
+    // that seat, so we bind the same source manually: subscribe to the current
+    // provide bundle (session switches + roster changes) and to the projection
+    // face it exposes.
+    const sessionInfo = useSyncExternalStore(
+      useCallback((onStoreChange: () => void) => ctx.sessions.currentProvideInfo.subscribe(onStoreChange), [ctx]),
+      useCallback(() => ctx.sessions.currentProvideInfo.getSnapshot(), [ctx]),
+    )
     const pressure = useSyncExternalStore(
       useCallback((onStoreChange: () => void) => {
         const unsubscribe: Array<() => void> = []
-        if (currentId !== undefined) {
-          const face = ctx.sessions.binding(currentId)?.session.projections.faceOf('contextPressure')
-          if (face !== undefined) unsubscribe.push(face.subscribe(onStoreChange))
-        }
-        unsubscribe.push(ctx.sessions.list.subscribe(onStoreChange))
+        const face = sessionInfo?.projections?.faceOf('contextPressure')
+        if (face !== undefined) unsubscribe.push(face.subscribe(onStoreChange))
         unsubscribe.push(ctx.sessions.currentProvideInfo.subscribe(onStoreChange))
         return () => { for (const off of unsubscribe) off() }
-      }, [ctx, currentId]),
-      useCallback(() => {
-        if (currentId === undefined) return undefined
-        const face = ctx.sessions.binding(currentId)?.session.projections.faceOf('contextPressure')
-        return face?.getSnapshot() as ContextPressureProjection | undefined
-      }, [ctx, currentId]),
+      }, [ctx, sessionInfo]),
+      useCallback(() => (
+        sessionInfo?.projections?.faceOf('contextPressure').getSnapshot() as ContextPressureProjection | undefined
+      ), [sessionInfo]),
     )
 
     const context = contextOccupancy(pressure)
