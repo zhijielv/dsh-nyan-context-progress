@@ -1,4 +1,4 @@
-# A-02 上下文长度进度条插件
+# dsh-nyan-context-progress 上下文长度进度条插件
 
 ## Goal
 
@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- 插件位于 `test-plugin-A-02/`，独立于 A-01，不参考/复用 A-01 代码。
+- 插件位于 `dsh-nyan-context-progress/`，独立于 A-01，不参考/复用 A-01 代码。
 - 只参考官方 dsh API/文档；本插件使用官方 client 插件机制。
 - 在 dsh Web 窗口右下角渲染进度条，使用官方 `shell.overlay`（`@deepseek-ai/dsh-client-ui-layout/client`）槽位，`id` 为 `context-progress`。
 - “上下文长度”定义为官方 token 占用（`contextPressure` 投影），不是字符数。
@@ -19,12 +19,12 @@
 - 跟随当前会话切换；会话投影更新时进度条自动更新；切换会话时清理旧订阅。
 - 使用 `ctx.slots.inject('shell.overlay', ...)` 等待官方槽位声明，避免插件加载顺序问题。
 - 进度条可鼠标/触摸拖拽移动位置，位置通过 localStorage 持久化。
-- 无额外运行时依赖；样式使用内联 style，不引入第三方 UI/动画库；猫图标来自 JetBrains NyanProgressBar 开源仓库，作为资源随 bundle 内联。
+- 无额外运行时依赖；样式使用内联 style，不引入第三方 UI/动画库；猫跑步序列帧来自 `iliana/html5nyancat`，作为资源随 bundle 内联。
 - 插件按 dsh client 插件契约构建：`lib/client.js` 通过 `window.__ModuleLoader__.load({ id, factory })` 交付，导出 `apply`/`inject`。
 
 ## Acceptance Criteria
 
-- [ ] `test-plugin-A-02` 中可通过 `node build.mjs` 构建出 `lib/client.js` 与 `lib/index.js`。
+- [ ] `dsh-nyan-context-progress` 中可通过 `node build.mjs` 构建出 `lib/client.js` 与 `lib/index.js`。
 - [ ] `node scripts/selfcheck.mjs` 通过：验证 bundle id、`apply`/`inject` 导出、注册到 `shell.overlay` 且 `id` 为 `context-progress`。
 - [ ] 不包含对 `test-plugin-A-01` 的任何 import/路径/代码复制。
 - [ ] 进度条渲染在窗口右下角，整体为 200x20 小条，不遮挡/不拦截下方 UI；仅进度条自身可 hover，悬浮显示 `Context {percent}%` 提示。

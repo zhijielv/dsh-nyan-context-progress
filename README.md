@@ -1,4 +1,4 @@
-# test-plugin-a-02 — 上下文长度 Nyan 进度条
+# dsh-nyan-context-progress — 上下文长度 Nyan 进度条
 
 一个 out-of-tree 的 dsh client 插件：在 dsh Web 窗口右下角显示当前会话的
 **上下文长度占用**进度条，复刻 JetBrains NyanProgressBar 的确定态视觉效果。
@@ -15,7 +15,8 @@
 - 支持鼠标/触摸拖拽移动位置，位置会保存在本地（刷新后保持）。
 - 没有可用投影/容量时自动隐藏，不占位。
 - 跟随当前会话切换，投影更新时实时刷新。
-- 猫图标来自 JetBrains NyanProgressBar 开源仓库（`batya239/NyanProgressBar`），作为资源内联进 bundle。
+- 视觉风格来自 JetBrains NyanProgressBar 开源仓库（`batya239/NyanProgressBar`）。
+- 跑步序列帧来自原版 HTML5 Nyan Cat 动画（`iliana/html5nyancat`），作为资源内联进 bundle。
 
 ## 构建与自检
 
@@ -29,16 +30,19 @@ tsc -p tsconfig.json    # 类型检查
 
 ## 安装到 dsh web profile
 
+先获取源码（或直接用本地已克隆的目录）：
+
 ```sh
-dsh plugin --profile web add D:\Projects\GithubProjects\deepseek-harness-plugins\test-plugin-A-02
+git clone <你的仓库地址>
+dsh plugin --profile web add <repo-path>/dsh-nyan-context-progress
 ```
 
 然后在 `$DSH_HOME/profiles/web/cordis.patch.yml` 追加挂载：
 
 ```yaml
 - insert:
-    - id: test-plugin-a-02
-      name: 'test-plugin-a-02'
+    - id: dsh-nyan-context-progress
+      name: 'dsh-nyan-context-progress'
 ```
 
 重启 dsh web 后，右下角会出现上下文进度条。
@@ -46,7 +50,7 @@ dsh plugin --profile web add D:\Projects\GithubProjects\deepseek-harness-plugins
 卸载：
 
 ```sh
-dsh plugin --profile web remove test-plugin-a-02
+dsh plugin --profile web remove dsh-nyan-context-progress
 ```
 
 并把 patch 里的对应行删除。

@@ -79,7 +79,7 @@ const result = spawnSync(bin[0], [...bin.slice(1), ...args], { cwd: HERE, stdio:
 if (result.status !== 0) process.exit(result.status ?? 1)
 
 writeFileSync(join(HERE, 'lib', 'index.js'), [
-  '// Node half of test-plugin-a-02: the host Loader mounts this module as a',
+  '// Node half of dsh-nyan-context-progress: the host Loader mounts this module as a',
   '// cordis entry. All behavior lives in the browser half (exports["./client"]',
   '// -> lib/client.js).',
   'export function apply() {}',

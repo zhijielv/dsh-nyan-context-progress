@@ -1,18 +1,19 @@
 /**
- * Browser half of test-plugin-a-02: a JetBrains Nyan-Progress-Bar style
- * context-length progress bar.
+ * Browser half of dsh-nyan-context-progress: a JetBrains Nyan-Progress-Bar
+ * style context-length progress bar.
  *
  * The component registers into the official `shell.overlay` slot declared by
  * @deepseek-ai/dsh-client-ui-layout. That slot is a root-scope floating layer,
- * so the component reads the current session through the global `useSessions`
- * seat and subscribes to the official `contextPressure` projection through
- * `ctx.sessions.binding(id)?.session.projections.faceOf('contextPressure')`.
+ * so it reads the current session through `ctx.sessions.currentProvideInfo`
+ * and subscribes to the official `contextPressure` projection through
+ * `sessionInfo.projections.faceOf('contextPressure')` (the same source the
+ * official `useProjection` reads).
  *
  * The visual follows the original IntelliJ NyanProgressBar determinate look:
- * a thin rounded track, a vertical 7-color rainbow fill, and the plugin's own
- * Nyan cat sprite at the leading edge. The bar is a tiny non-blocking strip;
- * only the 200x20px bar itself is hoverable so a native tooltip can show the
- * current percentage.
+ * a thin rounded track, a vertical 7-color rainbow fill, and the Nyan Cat at
+ * the leading edge. The cat plays the original 6-frame running sequence in
+ * place. The bar is a tiny non-blocking strip; only the 200x20px bar itself is
+ * hoverable so a native tooltip can show the current percentage.
  */
 import {
   useCallback,
