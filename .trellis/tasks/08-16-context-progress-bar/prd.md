@@ -18,6 +18,7 @@
 - 进度条复刻 JetBrains NyanProgressBar 的确定态效果：薄圆角轨道 + 竖直 7 色彩虹填充 + 原版 Nyan Cat sprite 位于填充前端；无黑底卡片，无文本卡片。
 - 跟随当前会话切换；会话投影更新时进度条自动更新；切换会话时清理旧订阅。
 - 使用 `ctx.slots.inject('shell.overlay', ...)` 等待官方槽位声明，避免插件加载顺序问题。
+- 进度条可鼠标/触摸拖拽移动位置，位置通过 localStorage 持久化。
 - 无额外运行时依赖；样式使用内联 style，不引入第三方 UI/动画库；猫图标来自 JetBrains NyanProgressBar 开源仓库，作为资源随 bundle 内联。
 - 插件按 dsh client 插件契约构建：`lib/client.js` 通过 `window.__ModuleLoader__.load({ id, factory })` 交付，导出 `apply`/`inject`。
 
@@ -27,6 +28,7 @@
 - [ ] `node scripts/selfcheck.mjs` 通过：验证 bundle id、`apply`/`inject` 导出、注册到 `shell.overlay` 且 `id` 为 `context-progress`。
 - [ ] 不包含对 `test-plugin-A-01` 的任何 import/路径/代码复制。
 - [ ] 进度条渲染在窗口右下角，整体为 200x20 小条，不遮挡/不拦截下方 UI；仅进度条自身可 hover，悬浮显示 `Context {percent}%` 提示。
+- [ ] 可按住进度条拖拽移动，松开后位置保存到 localStorage，刷新后保持。
 - [ ] 无会话或尚无 `contextPressure`/`contextWindow` 时不渲染。
 - [ ] 有数据时显示 JetBrains 风格彩虹进度条 + 原版 Nyan Cat sprite，无黑底卡片、无文本卡片。
 - [ ] 切换当前会话时读取新会话的 `contextPressure`，并取消旧会话订阅。

@@ -14,7 +14,13 @@
  * only the 200x20px bar itself is hoverable so a native tooltip can show the
  * current percentage.
  */
-import { useCallback, useSyncExternalStore } from 'react'
+import {
+  useCallback,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 import type { Context } from '@deepseek-ai/cordis'
 import type { PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls the `shell.overlay` SlotMap row and the `useSessions` global seat.
@@ -34,6 +40,40 @@ function contextOccupancy(
   if (usedTokens === undefined || pressure?.contextWindow === undefined || pressure.contextWindow <= 0) return null
   return {
     percent: Math.min(100, Math.round(usedTokens / pressure.contextWindow * 100)),
+  }
+}
+
+/** Fixed size of the progress strip. */
+const BAR_WIDTH = 200
+const BAR_HEIGHT = 20
+const DEFAULT_RIGHT = 8
+const DEFAULT_BOTTOM = 6
+const POS_STORAGE_KEY = 'a02-context-progress-pos'
+
+interface BarPosition {
+  left: number
+  top: number
+}
+
+function loadPosition(): BarPosition | null {
+  try {
+    const raw = localStorage.getItem(POS_STORAGE_KEY)
+    if (raw === null) return null
+    const parsed = JSON.parse(raw) as { left?: unknown; top?: unknown }
+    if (typeof parsed.left === 'number' && typeof parsed.top === 'number') {
+      return { left: parsed.left, top: parsed.top }
+    }
+  } catch {
+    // Ignore unreadable/corrupt storage and fall back to the default corner.
+  }
+  return null
+}
+
+function savePosition(position: BarPosition): void {
+  try {
+    localStorage.setItem(POS_STORAGE_KEY, JSON.stringify(position))
+  } catch {
+    // Storage may be unavailable in some embedding contexts; dragging still works.
   }
 }
 
@@ -69,6 +109,40 @@ export function apply(ctx: Context): void {
       ), [sessionInfo]),
     )
 
+    const [position, setPosition] = useState<BarPosition | null>(loadPosition)
+    const [dragging, setDragging] = useState(false)
+    const positionRef = useRef<BarPosition | null>(position)
+    positionRef.current = position
+    const dragStartRef = useRef<{ startX: number; startY: number; left: number; top: number } | null>(null)
+
+    const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+      if (e.button !== 0) return
+      const left = positionRef.current?.left ?? window.innerWidth - BAR_WIDTH - DEFAULT_RIGHT
+      const top = positionRef.current?.top ?? window.innerHeight - BAR_HEIGHT - DEFAULT_BOTTOM
+      dragStartRef.current = { startX: e.clientX, startY: e.clientY, left, top }
+      setDragging(true)
+      e.currentTarget.setPointerCapture(e.pointerId)
+      e.preventDefault()
+    }
+    const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
+      const drag = dragStartRef.current
+      if (drag === null) return
+      const nextLeft = Math.min(Math.max(0, drag.left + e.clientX - drag.startX), window.innerWidth - BAR_WIDTH)
+      const nextTop = Math.min(Math.max(0, drag.top + e.clientY - drag.startY), window.innerHeight - BAR_HEIGHT)
+      const next = { left: nextLeft, top: nextTop }
+      positionRef.current = next
+      setPosition(next)
+    }
+    const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>): void => {
+      if (dragStartRef.current === null) return
+      dragStartRef.current = null
+      setDragging(false)
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId)
+      }
+      if (positionRef.current !== null) savePosition(positionRef.current)
+    }
+
     const context = contextOccupancy(pressure)
     if (context === null) return null
 
@@ -80,15 +154,23 @@ export function apply(ctx: Context): void {
         aria-valuemin={0}
         aria-valuemax={100}
         title={`Context ${context.percent}%`}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
         style={{
           position: 'absolute',
-          right: 8,
-          bottom: 6,
-          width: 200,
-          height: 20,
+          left: position?.left,
+          top: position?.top,
+          right: position === null ? DEFAULT_RIGHT : undefined,
+          bottom: position === null ? DEFAULT_BOTTOM : undefined,
+          width: BAR_WIDTH,
+          height: BAR_HEIGHT,
           zIndex: 1,
           pointerEvents: 'auto',
-          cursor: 'default',
+          cursor: dragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
+          userSelect: 'none',
         }}
       >
         <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
