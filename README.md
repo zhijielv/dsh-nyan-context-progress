@@ -1,7 +1,7 @@
 # test-plugin-a-02 — 上下文长度 Nyan 进度条
 
 一个 out-of-tree 的 dsh client 插件：在 dsh Web 窗口右下角显示当前会话的
-**上下文长度占用**进度条，采用 Nyan 风格的彩虹动画填充条。
+**上下文长度占用**进度条，复刻 JetBrains NyanProgressBar 的确定态视觉效果。
 
 ## 功能
 
@@ -9,9 +9,12 @@
 - 数据来自官方 `contextPressure` 投影：
   - 已用 = `projectedTokens ?? pressureTokens`
   - 总量 = `contextWindow`
-  - 显示 `~12.3K / 128K` 与百分比。
+  - 百分比 = `min(100, round(used / contextWindow * 100))`
+- 视觉复刻 JetBrains 原版：薄圆角轨道 + 竖直 7 色彩虹填充 + 原版 Nyan Cat sprite 位于填充前端；无黑底卡片、无文本卡片。
+- 根元素 `pointer-events: none`，不会遮挡/拦截下方 UI。
 - 没有可用投影/容量时自动隐藏，不占位。
 - 跟随当前会话切换，投影更新时实时刷新。
+- 猫图标来自 JetBrains NyanProgressBar 开源仓库（`batya239/NyanProgressBar`），作为资源内联进 bundle。
 
 ## 构建与自检
 
@@ -51,6 +54,7 @@ dsh plugin --profile web remove test-plugin-a-02
 
 ```text
 src/client/index.tsx   # 浏览器端插件：注册 shell.overlay + 进度条组件
+src/client/assets/     # 原版 Nyan Cat PNG（内联进 bundle）
 scripts/selfcheck.mjs  # 无浏览器 bundle 契约自检
 lib/                   # 构建产物（client 面 + node 面）
 .trellis/              # Trellis 任务/规范（由 trellis init 生成）

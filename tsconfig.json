@@ -20,5 +20,5 @@
       "@deepseek-ai/dsh-token-meter/client": ["../../deepseek-harness/packages/llm/token-meter/lib/types/client.d.ts"]
     }
   },
-  "include": ["src/client/index.tsx"]
+  "include": ["src/client/index.tsx", "src/client/assets.d.ts"]
 }
