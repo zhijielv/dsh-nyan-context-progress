@@ -62,7 +62,6 @@ src/client/index.tsx   # 浏览器端插件：注册 shell.overlay + 进度条�
 src/client/assets/     # 原版 Nyan Cat 跑步序列帧（SVG，内联进 bundle）
 scripts/selfcheck.mjs  # 无浏览器 bundle 契约自检
 lib/                   # 构建产物（client 面 + node 面）
-.trellis/              # Trellis 任务/规范（由 trellis init 生成）
 ```
 
 ## 后续可扩展

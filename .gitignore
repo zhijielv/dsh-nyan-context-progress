@@ -7,3 +7,14 @@ dist/
 !.env.example
 .DS_Store
 Thumbs.db
+
+# Local AI/Trellis scaffolding — not part of the plugin source
+.trellis/
+.agents/
+.claude/
+.dsh/
+agent/
+AGENTS.md
+skills-lock.json
+__pycache__/
+*.pyc
