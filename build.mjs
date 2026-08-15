@@ -51,10 +51,11 @@ function resolveEsbuild() {
 }
 
 // esbuild supports --banner/--footer (no intro), so the CJS scaffolding folds
-// into the banner: banner + code + footer, in that order.
+// into the banner AFTER the factory opener — the module/exports variables must
+// be local to each factory, never top-level globals in the classic script.
 const banner = [
-  'var module = { exports: {} }; var exports = module.exports;',
   `window.__ModuleLoader__.load({ id: ${JSON.stringify(BUNDLE_ID)}, factory: (require) => {`,
+  'var module = { exports: {} }; var exports = module.exports;',
 ].join('\n')
 const footer = 'return module.exports; } });'
 

@@ -23,7 +23,7 @@ function formatTokens(n: number): string {
   const scaled = (v: number): string =>
     v >= 100 ? String(Math.round(v)) : String(Math.round(v * 10) / 10)
   if (n < 1_000) return String(n)
-  if (n < 1_000_000) return `${scaled(n / 1_000)}K`
+  if (n < 999_500) return `${scaled(n / 1_000)}K`
   return `${scaled(n / 1_000_000)}M`
 }
 
@@ -32,7 +32,7 @@ function contextOccupancy(
   pressure: ContextPressureProjection | undefined,
 ): { percent: number; usedTokens: number; contextWindow: number } | null {
   const usedTokens = pressure?.projectedTokens ?? pressure?.pressureTokens
-  if (usedTokens === undefined || pressure?.contextWindow === undefined) return null
+  if (usedTokens === undefined || pressure?.contextWindow === undefined || pressure.contextWindow <= 0) return null
   return {
     percent: Math.min(100, Math.round(usedTokens / pressure.contextWindow * 100)),
     usedTokens,
@@ -53,12 +53,19 @@ export function apply(ctx: Context): void {
     const currentId = useSessions(s => s.current)
 
     // Root-scope slots do not receive the session `useProjection` seat, so we
-    // subscribe to the current session's projection face directly.
+    // subscribe to the current session's projection face directly. We also
+    // subscribe to the sessions list/provide-info feeds so a binding that is
+    // materialized after the first render can re-arm this subscription.
     const pressure = useSyncExternalStore(
       useCallback((onStoreChange: () => void) => {
-        if (currentId === undefined) return () => {}
-        const face = ctx.sessions.binding(currentId)?.session.projections.faceOf('contextPressure')
-        return face === undefined ? () => {} : face.subscribe(onStoreChange)
+        const unsubscribe: Array<() => void> = []
+        if (currentId !== undefined) {
+          const face = ctx.sessions.binding(currentId)?.session.projections.faceOf('contextPressure')
+          if (face !== undefined) unsubscribe.push(face.subscribe(onStoreChange))
+        }
+        unsubscribe.push(ctx.sessions.list.subscribe(onStoreChange))
+        unsubscribe.push(ctx.sessions.currentProvideInfo.subscribe(onStoreChange))
+        return () => { for (const off of unsubscribe) off() }
       }, [ctx, currentId]),
       useCallback(() => {
         if (currentId === undefined) return undefined
@@ -72,8 +79,11 @@ export function apply(ctx: Context): void {
 
     return (
       <div
-        role="status"
+        role="progressbar"
         aria-label={`上下文已用 ${context.percent}%`}
+        aria-valuenow={context.percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
         style={{
           position: 'absolute',
           right: 12,
@@ -99,26 +109,25 @@ export function apply(ctx: Context): void {
         }}
       >
         <style>{`
-          @keyframes dsh-context-rainbow {
+          @keyframes a02-context-rainbow {
             from { background-position: 0% 0; }
             to { background-position: 200% 0; }
           }
-          @keyframes dsh-context-bounce {
+          @keyframes a02-context-bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-2px); }
           }
           @media (prefers-reduced-motion: reduce) {
-            .dsh-context-fill { animation: none !important; }
-            .dsh-context-cat { animation: none !important; }
+            .a02-context-fill { animation: none !important; }
+            .a02-context-cat { animation: none !important; }
           }
         `}</style>
         <span
-          className="dsh-context-cat"
-          role="img"
+          className="a02-context-cat"
           aria-hidden
           style={{
             fontSize: 18,
-            animation: 'dsh-context-bounce 0.9s steps(2) infinite',
+            animation: 'a02-context-bounce 0.9s steps(2) infinite',
           }}
         >
           🐱
@@ -138,14 +147,14 @@ export function apply(ctx: Context): void {
             }}
           >
             <div
-              className="dsh-context-fill"
+              className="a02-context-fill"
               style={{
                 width: `${context.percent}%`,
                 height: '100%',
                 borderRadius: 'inherit',
                 background: 'linear-gradient(90deg, #ff0040, #ff8000, #ffe600, #33cc33, #00ccff, #5555ff, #aa00ff, #ff0040)',
                 backgroundSize: '200% 100%',
-                animation: 'dsh-context-rainbow 1.2s linear infinite',
+                animation: 'a02-context-rainbow 1.2s linear infinite',
               }}
             />
           </div>
