@@ -10,8 +10,9 @@
  *
  * The visual follows the original IntelliJ NyanProgressBar determinate look:
  * a thin rounded track, a vertical 7-color rainbow fill, and the plugin's own
- * Nyan cat sprite at the leading edge. It is deliberately non-interactive
- * (`pointer-events: none`) so it never blocks the underlying dsh UI.
+ * Nyan cat sprite at the leading edge. The bar is a tiny non-blocking strip;
+ * only the 200x20px bar itself is hoverable so a native tooltip can show the
+ * current percentage.
  */
 import { useCallback, useSyncExternalStore } from 'react'
 import type { Context } from '@deepseek-ai/cordis'
@@ -76,10 +77,11 @@ export function apply(ctx: Context): void {
     return (
       <div
         role="progressbar"
-        aria-label={`上下文已用 ${context.percent}%`}
+        aria-label={`Context ${context.percent}%`}
         aria-valuenow={context.percent}
         aria-valuemin={0}
         aria-valuemax={100}
+        title={`Context ${context.percent}%`}
         style={{
           position: 'absolute',
           right: 8,
@@ -87,10 +89,11 @@ export function apply(ctx: Context): void {
           width: 200,
           height: 20,
           zIndex: 1,
-          pointerEvents: 'none',
+          pointerEvents: 'auto',
+          cursor: 'default',
         }}
       >
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
           {/* Nyan cat rides at the leading edge of the fill, sticking above the bar. */}
           <img
             src={catRight}

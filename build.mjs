@@ -42,11 +42,12 @@ const PLATFORM_EXTERNALS = [
 function resolveEsbuild() {
   const local = join(HERE, 'node_modules', 'esbuild', 'bin', 'esbuild')
   if (existsSync(local)) return { bin: ['node', local] }
-  const repoPnpm = 'D:/Projects/GithubProjects/deepseek-harness/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/bin/esbuild'
+  const repoRoot = join(HERE, '..', '..', 'deepseek-harness')
+  const repoPnpm = join(repoRoot, 'node_modules', '.pnpm', 'esbuild@0.25.12', 'node_modules', 'esbuild', 'bin', 'esbuild')
   if (existsSync(repoPnpm)) return { bin: ['node', repoPnpm] }
   throw new Error(
     'esbuild not found: run `pnpm add -D esbuild` in this directory, or restore '
-    + 'the harness at D:/Projects/GithubProjects/deepseek-harness (whose .pnpm cache is used as a fallback)',
+    + `the harness at ${repoRoot} (whose .pnpm cache is used as a fallback)`,
   )
 }
 

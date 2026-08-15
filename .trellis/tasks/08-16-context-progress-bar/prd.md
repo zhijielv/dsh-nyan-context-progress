@@ -26,7 +26,7 @@
 - [ ] `test-plugin-A-02` 中可通过 `node build.mjs` 构建出 `lib/client.js` 与 `lib/index.js`。
 - [ ] `node scripts/selfcheck.mjs` 通过：验证 bundle id、`apply`/`inject` 导出、注册到 `shell.overlay` 且 `id` 为 `context-progress`。
 - [ ] 不包含对 `test-plugin-A-01` 的任何 import/路径/代码复制。
-- [ ] 进度条渲染在窗口右下角，根元素 `pointer-events: none`，完全不遮挡/不拦截下方 UI。
+- [ ] 进度条渲染在窗口右下角，整体为 200x20 小条，不遮挡/不拦截下方 UI；仅进度条自身可 hover，悬浮显示 `Context {percent}%` 提示。
 - [ ] 无会话或尚无 `contextPressure`/`contextWindow` 时不渲染。
 - [ ] 有数据时显示 JetBrains 风格彩虹进度条 + 原版 Nyan Cat sprite，无黑底卡片、无文本卡片。
 - [ ] 切换当前会话时读取新会话的 `contextPressure`，并取消旧会话订阅。

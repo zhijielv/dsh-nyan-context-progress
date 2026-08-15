@@ -1,5 +1,5 @@
 {
-  "extends": "D:/Projects/GithubProjects/deepseek-harness/tsconfig.base.json",
+  "extends": "../../deepseek-harness/tsconfig.base.json",
   "compilerOptions": {
     "composite": false,
     "incremental": false,
