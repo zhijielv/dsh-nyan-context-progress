@@ -123,10 +123,11 @@ export function apply(ctx: Context): void {
                 width: '100%',
                 height: '100%',
                 boxSizing: 'border-box',
-                border: '1px solid transparent',
+                border: '1px solid rgba(120, 120, 120, 0.9)',
                 borderRadius: 7,
                 overflow: 'hidden',
-                background: 'rgba(255, 255, 255, 0.12)',
+                background: 'rgba(255, 255, 255, 0.28)',
+                boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.35)',
               }}
             >
               <div
