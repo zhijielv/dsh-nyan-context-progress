@@ -71,7 +71,13 @@ function loadPosition(): BarPosition | null {
     if (raw === null) return null
     const parsed = JSON.parse(raw) as { left?: unknown; top?: unknown }
     if (typeof parsed.left === 'number' && typeof parsed.top === 'number') {
-      return { left: parsed.left, top: parsed.top }
+      const left = parsed.left
+      const top = parsed.top
+      // Reject positions outside the current viewport (e.g. after a window
+      // resize or a smaller embedding) and fall back to the default corner.
+      if (left >= 0 && top >= 0 && left + BAR_WIDTH <= window.innerWidth && top + BAR_HEIGHT <= window.innerHeight) {
+        return { left, top }
+      }
     }
   } catch {
     // Ignore unreadable/corrupt storage and fall back to the default corner.
@@ -123,6 +129,7 @@ export function apply(ctx: Context): void {
     const [dragging, setDragging] = useState(false)
     const positionRef = useRef<BarPosition | null>(position)
     positionRef.current = position
+    const barRef = useRef<HTMLDivElement | null>(null)
     const dragStartRef = useRef<{ startX: number; startY: number; left: number; top: number } | null>(null)
 
     const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
@@ -153,6 +160,8 @@ export function apply(ctx: Context): void {
       if (positionRef.current !== null) savePosition(positionRef.current)
     }
 
+    const context = contextOccupancy(pressure)
+
     // Cycle the six original running frames in place (12fps). Respect the OS
     // reduced-motion setting by freezing on the first frame.
     const [frame, setFrame] = useState(0)
@@ -162,11 +171,45 @@ export function apply(ctx: Context): void {
       return () => window.clearInterval(timer)
     }, [])
 
-    const context = contextOccupancy(pressure)
+    // Keep the bar inside the shell overlay layer when the viewport or layout
+    // changes (e.g. sidebar expand/collapse resizes the overlay container).
+    // The bar only exists once context pressure is known, so (re)bind the
+    // observer when that flips from null to a value.
+    useEffect(() => {
+      if (context === null) return
+      const el = barRef.current
+      if (el === null) return
+      const container = el.offsetParent as HTMLElement | null
+      if (container === null) return
+      const clampToContainer = (): void => {
+        const cw = container.clientWidth
+        const ch = container.clientHeight
+        if (cw === 0 || ch === 0) return
+        const current = positionRef.current
+        if (current === null) return
+        const nextLeft = Math.min(Math.max(0, current.left), cw - BAR_WIDTH)
+        const nextTop = Math.min(Math.max(0, current.top), ch - BAR_HEIGHT)
+        if (nextLeft !== current.left || nextTop !== current.top) {
+          const next = { left: nextLeft, top: nextTop }
+          positionRef.current = next
+          setPosition(next)
+          savePosition(next)
+        }
+      }
+      const observer = new ResizeObserver(clampToContainer)
+      observer.observe(container)
+      window.addEventListener('resize', clampToContainer)
+      return () => {
+        observer.disconnect()
+        window.removeEventListener('resize', clampToContainer)
+      }
+    }, [context !== null])
+
     if (context === null) return null
 
     return (
       <div
+        ref={barRef}
         role="progressbar"
         aria-label={`Context ${context.percent}%`}
         aria-valuenow={context.percent}
