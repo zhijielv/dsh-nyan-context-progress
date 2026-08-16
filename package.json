@@ -4,11 +4,42 @@
   "private": true,
   "type": "module",
   "description": "Out-of-tree dsh web plugin: a Nyan-style context-length progress bar in the bottom-right shell overlay",
+  "author": "zhijielv",
+  "license": "MIT",
+  "homepage": "https://github.com/zhijielv/dsh-nyan-context-progress#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhijielv/dsh-nyan-context-progress.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhijielv/dsh-nyan-context-progress/issues"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "context",
+    "progress",
+    "nyan",
+    "shell-overlay"
+  ],
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
     "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "scripts",
+    "build.mjs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "build": "node build.mjs",
