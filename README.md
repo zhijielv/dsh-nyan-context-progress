@@ -4,6 +4,8 @@
 
 dsh Web 客户端右下角上下文占用进度条，复刻 JetBrains NyanProgressBar 的确定态视觉。
 
+![效果预览](docs/preview.png)
+
 ## 功能
 
 - 右下角 `200x20` 进度条，不遮挡下方 UI
