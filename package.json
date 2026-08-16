@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "description": "Out-of-tree dsh web plugin: a Nyan-style context-length progress bar in the bottom-right shell overlay",
-  "author": "zhijielv",
+  "author": "fengling375",
   "license": "MIT",
-  "homepage": "https://github.com/zhijielv/dsh-nyan-context-progress#readme",
+  "homepage": "https://github.com/fengling375/dsh-nyan-context-progress#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhijielv/dsh-nyan-context-progress.git"
+    "url": "git+https://github.com/fengling375/dsh-nyan-context-progress.git"
   },
   "bugs": {
-    "url": "https://github.com/zhijielv/dsh-nyan-context-progress/issues"
+    "url": "https://github.com/fengling375/dsh-nyan-context-progress/issues"
   },
   "keywords": [
     "dsh",

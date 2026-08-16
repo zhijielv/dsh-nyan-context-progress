@@ -18,7 +18,7 @@ dsh Web 客户端右下角上下文占用进度条，复刻 JetBrains NyanProgre
 ## 安装
 
 ```sh
-git clone git@github.com:zhijielv/dsh-nyan-context-progress.git
+git clone git@github.com:fengling375/dsh-nyan-context-progress.git
 cd dsh-nyan-context-progress
 dsh plugin --profile web add "$PWD"
 ```
